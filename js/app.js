@@ -51,7 +51,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Load tasks from the server
     async function loadTasksFromServer() {
-        storageStatus.textContent = 'Syncing...';
+        storageStatus.textContent = '同步中...';
         storageStatus.style.color = 'var(--text-color)';
         try {
             const response = await fetch('/api/tasks');
@@ -59,19 +59,19 @@ document.addEventListener('DOMContentLoaded', function() {
                 throw new Error(`Server responded with status: ${response.status}`);
             }
             tasks = await response.json();
-            storageStatus.textContent = '✓ Synced';
+            storageStatus.textContent = '✓ 已同步';
             storageStatus.style.color = 'var(--completed-color)';
             renderTasks();
         } catch (error) {
             console.error('Error loading tasks:', error);
-            storageStatus.textContent = '⚠ Sync failed';
+            storageStatus.textContent = '⚠ 同步失败';
             storageStatus.style.color = 'black';
         }
     }
     
     // Save tasks to the server
     async function saveTasksToServer() {
-        storageStatus.textContent = 'Saving...';
+        storageStatus.textContent = '保存中...';
         try {
             const response = await fetch('/api/tasks', {
                 method: 'POST',
@@ -84,11 +84,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 throw new Error(`Server responded with status: ${response.status}`);
             }
             await response.json(); // Wait for the server to confirm
-            storageStatus.textContent = '✓ Synced';
+            storageStatus.textContent = '✓ 已同步';
             storageStatus.style.color = 'var(--completed-color)';
         } catch (error) {
             console.error('Error saving tasks:', error);
-            storageStatus.textContent = '⚠ Sync failed';
+            storageStatus.textContent = '⚠ 同步失败';
             storageStatus.style.color = 'black';
         }
     }
@@ -121,7 +121,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (tasks.length === 0) {
             const emptyMessage = document.createElement('li');
             emptyMessage.className = 'task-item empty-list';
-            emptyMessage.textContent = 'No tasks for today. Add one above!';
+            emptyMessage.textContent = '今天没有任务，在上方添加一个吧！';
             taskList.appendChild(emptyMessage);
             return;
         }
@@ -248,59 +248,58 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     // Export tasks to TXT file - uses the existing server-side function
-    function exportTasksToTxt(e) {
-        if (e) e.preventDefault();
-        
-        if (tasks.length === 0) {
-            alert('No tasks to export.');
-            return;
+        function exportTasksToTxt(e) {
+            if (e) e.preventDefault();
+            
+            if (tasks.length === 0) {
+                alert('沒有可導出的任務。');
+                return;
+            }
+            
+            const now = new Date();
+            const dateString = now.toLocaleDateString(undefined, { 
+                weekday: 'long', 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric' 
+            });
+            
+            const payload = {
+                tasks: tasks,
+                date: dateString
+            };
+            
+            fetch('/api/export', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            })
+            .then(response => {
+                if (!response.ok) throw new Error('Server returned error');
+                return response.blob();
+            })
+            .then(blob => {
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                const date_for_filename = new Date().toISOString().split('T')[0];
+                
+                a.href = url;
+                a.download = 'InkTodos-' + date_for_filename + '.txt';
+                a.style.display = 'none';
+                
+                document.body.appendChild(a);
+                a.click();
+                
+                setTimeout(() => {
+                    document.body.removeChild(a);
+                    URL.revokeObjectURL(url);
+                }, 100);
+            })
+            .catch(error => {
+                console.error('Export error:', error);
+                alert('無法導出任務，請檢查控制台錯誤。');
+            });
         }
-        
-        const now = new Date();
-        const dateString = now.toLocaleDateString(undefined, { 
-            weekday: 'long', 
-            year: 'numeric', 
-            month: 'long', 
-            day: 'numeric' 
-        });
-        
-        const payload = {
-            tasks: tasks,
-            date: dateString
-        };
-        
-        fetch('/api/export', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload)
-        })
-        .then(response => {
-            if (!response.ok) throw new Error('Server returned error');
-            return response.blob();
-        })
-        .then(blob => {
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            const date_for_filename = new Date().toISOString().split('T')[0];
-            
-            a.href = url;
-            a.download = 'InkTodos-' + date_for_filename + '.txt';
-            a.style.display = 'none';
-            
-            document.body.appendChild(a);
-            a.click();
-            
-            setTimeout(() => {
-                document.body.removeChild(a);
-                URL.revokeObjectURL(url);
-            }, 100);
-        })
-        .catch(error => {
-            console.error('Export error:', error);
-            alert('Could not export tasks. Please check the console for errors.');
-        });
-    }
-
     // --- Initialization ---
 
     // Event Listeners
