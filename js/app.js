@@ -279,10 +279,21 @@ document.addEventListener('DOMContentLoaded', function() {
                 taskItem.className = className;
                 taskItem.setAttribute('data-index', index);
 
+                var checkboxWrapper = document.createElement('label');
+                checkboxWrapper.className = 'checkbox-wrapper';
+
                 var checkbox = document.createElement('input');
                 checkbox.type = 'checkbox';
                 checkbox.checked = !!task.completed;
+                checkboxWrapper.appendChild(checkbox);
+
+                var checkboxBox = document.createElement('span');
+                checkboxBox.className = 'checkbox-box fallback-check';
+                setText(checkboxBox, checkbox.checked ? '✓' : '');
+                checkboxWrapper.appendChild(checkboxBox);
+
                 attachEvent(checkbox, 'change', function() {
+                    setText(checkboxBox, checkbox.checked ? '✓' : '');
                     toggleTaskStatus(index, taskItem);
                 });
 
@@ -304,7 +315,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     deleteTask(index);
                 });
 
-                taskItem.appendChild(checkbox);
+                taskItem.appendChild(checkboxWrapper);
                 taskItem.appendChild(taskText);
                 taskItem.appendChild(deleteBtn);
 
