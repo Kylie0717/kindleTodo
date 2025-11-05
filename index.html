@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>InkTodos</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="progress-container">
+                <div class="progress-bar" id="progress-bar"></div>
+            </div>
+            <h1>InkTodos</h1>
+            <p class="date-display" id="current-date"></p>
+            <button id="theme-toggle" class="theme-toggle" aria-label="Toggle dark mode" type="button">☀</button>
+        </header>
+        
+        <main>
+            <form id="task-form">
+                <input type="text" id="task-input" placeholder="Add new task..." aria-label="Add new task">
+                <button type="submit" id="add-task-btn">Add</button>
+            </form>
+            
+            <div class="task-list-container">
+                <div class="task-header">
+                    <h2>Today's Tasks</h2>
+                    <div class="task-actions">
+                        <button id="clear-pending-btn" class="action-btn">Clear Rollover</button>
+                    </div>
+                </div>
+                <ul id="task-list"></ul>
+            </div>
+        </main>
+        
+        <footer>
+            <p>Tap a task to mark it complete • <span id="storage-status">✓ Storage enabled</span> • <a href="about.html" class="nav-link">About</a> • <a href="#" id="export-btn" class="nav-link">Export TXT</a></p>
+        </footer>
+    </div>
+    
+    <script src="js/app.js"></script>
+</body>
+</html>

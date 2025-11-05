@@ -1,0 +1,247 @@
+/* E-reader friendly styles with high contrast and simple design */
+:root {
+    /* Light mode (default) */
+    --bg-color: #ffffff;
+    --text-color: #000000;
+    --light-gray: #e0e0e0;
+    --medium-gray: #707070;
+    --completed-color: #aaaaaa;
+    --focus-color: #111111;
+    --accent-color: #333333;
+}
+
+/* Disable all animations and transitions for the entire document */
+*, *::before, *::after {
+    animation: none !important;
+    transition: none !important;
+}
+
+/* Dark mode */
+.dark-mode {
+    --bg-color: #121212;
+    --text-color: #f0f0f0;
+    --light-gray: #333333;
+    --medium-gray: #999999;
+    --completed-color: #666666;
+    --focus-color: #f0f0f0;
+    --accent-color: #bbbbbb;
+}
+
+/* Removed prefers-color-scheme media query as it interferes with manual toggle */
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Bookerly', 'Palatino', 'Georgia', serif;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    line-height: 1.6;
+    padding: 0.75rem;
+    max-width: 100%;
+}
+
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 1rem;
+}
+
+header {
+    text-align: center;
+    margin-bottom: 2rem;
+    border-bottom: 1px solid var(--light-gray);
+    padding-bottom: 1rem;
+    position: relative;
+}
+
+.progress-container {
+    width: 100%;
+    height: 8px;
+    background-color: var(--light-gray);
+    position: relative;
+    margin-bottom: 1.5rem;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.progress-bar {
+    height: 100%;
+    background-color: var(--accent-color);
+    width: 0%;
+    /* Removed transition to prevent ghosting on e-ink displays */
+}
+
+.theme-toggle {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    background: none;
+    border: none;
+    font-size: 1.2rem;
+    cursor: pointer;
+    color: var(--accent-color);
+    padding: 0.5rem;
+    border-radius: 50%;
+    width: 2.5rem;
+    height: 2.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+h1 {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+}
+
+h2 {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+}
+
+.date-display {
+    font-size: 1.2rem;
+    color: var(--medium-gray);
+}
+
+/* Form styles */
+#task-form {
+    display: flex;
+    margin-bottom: 2rem;
+    border: 1px solid var(--light-gray);
+}
+
+#task-input {
+    flex: 1;
+    padding: 0.75rem;
+    font-size: 1rem;
+    border: none;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+}
+
+#add-task-btn {
+    padding: 0.75rem 1.5rem;
+    background-color: var(--accent-color);
+    color: var(--bg-color);
+    border: none;
+    font-size: 1rem;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+/* Task list styles */
+.task-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.task-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.action-btn {
+    padding: 0.5rem 1rem;
+    background-color: var(--accent-color);
+    color: var(--bg-color);
+    border: none;
+    font-size: 0.9rem;
+    cursor: pointer;
+    border-radius: 4px;
+}
+
+#task-list {
+    list-style-type: none;
+}
+
+.task-item {
+    padding: 1.2rem 1rem;
+    border-bottom: 1px solid var(--light-gray);
+    display: flex;
+    align-items: center;
+}
+
+.empty-list {
+    text-align: center;
+    color: var(--medium-gray);
+    font-style: italic;
+}
+
+.task-text {
+    flex: 1;
+    font-size: 1.1rem;
+}
+
+.completed .task-text {
+    text-decoration: line-through;
+    color: var(--completed-color);
+}
+
+.rolled-over .task-text::before {
+    content: "↻ ";
+    color: var(--accent-color);
+}
+
+.delete-btn {
+    margin-left: 1rem;
+    background: none;
+    border: none;
+    font-size: 1.2rem;
+    cursor: pointer;
+    color: var(--medium-gray);
+}
+
+footer {
+    margin-top: 2rem;
+    text-align: center;
+    font-size: 0.9rem;
+    color: var(--medium-gray);
+}
+
+/* Make checkboxes more visible on e-readers */
+input[type="checkbox"] {
+    width: 1.5rem;
+    height: 1.5rem;
+    margin-right: 1rem;
+    border: 2px solid var(--accent-color);
+    -webkit-appearance: none;
+    appearance: none;
+    display: inline-block;
+    position: relative;
+    border-radius: 0.2rem;
+    background-color: var(--bg-color);
+}
+
+input[type="checkbox"]:checked {
+    background-color: var(--accent-color);
+}
+
+input[type="checkbox"]:checked::after {
+    content: "✓";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 1.2rem;
+    color: var(--bg-color);
+    font-weight: bold;
+}
+
+/* Focus states for accessibility */
+a:focus, button:focus, input:focus {
+    outline: 2px solid var(--focus-color);
+}
+
+/* Navigation links */
+.nav-link {
+    color: var(--accent-color);
+    text-decoration: none;
+    font-weight: bold;
+}

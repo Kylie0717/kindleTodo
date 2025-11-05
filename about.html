@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About InkTodos</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        /* Dark mode variables - must match the ones in style.css */
+        .dark-mode {
+            --bg-color: #121212;
+            --text-color: #f0f0f0;
+            --light-gray: #333333;
+            --medium-gray: #999999;
+            --completed-color: #666666;
+            --focus-color: #f0f0f0;
+            --accent-color: #bbbbbb;
+        }
+        
+        /* Additional styles specific to about page */
+        .about-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 1rem;
+            line-height: 1.7;
+            position: relative;
+        }
+        
+        /* Decorative corner elements */
+        .about-container::before,
+        .about-container::after {
+            content: "┌───┐";
+            font-family: monospace;
+            position: absolute;
+            white-space: pre;
+            color: var(--light-gray);
+        }
+        
+        .about-container::before {
+            top: 1rem;
+            left: 1rem;
+        }
+        
+        .about-container::after {
+            content: "└───┘";
+            bottom: 1rem;
+            right: 1rem;
+        }
+
+        .hero {
+            text-align: center;
+            margin: 2rem 0 3rem;
+        }
+
+        .tagline {
+            font-size: 1.3rem;
+            margin-top: 0.5rem;
+            color: var(--medium-gray);
+            font-style: italic;
+        }
+
+        .section {
+            margin-bottom: 3rem;
+        }
+
+        .section-title {
+            margin-bottom: 1.5rem;
+            border-bottom: 1px solid var(--light-gray);
+            padding-bottom: 0.5rem;
+            position: relative;
+        }
+        
+        .section-title::after {
+            content: "─────";
+            font-family: monospace;
+            position: absolute;
+            right: 0;
+            bottom: 0.5rem;
+            color: var(--light-gray);
+        }
+
+        .features {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2rem;
+        }
+
+        .feature {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .feature-title {
+            font-size: 1.3rem;
+            margin: 1rem 0 0.5rem;
+            text-align: center;
+        }
+
+        .feature-desc {
+            text-align: center;
+        }
+
+        .illustration {
+            margin: 1rem 0;
+            text-align: center;
+            line-height: 1;
+        }
+
+        .ascii-art {
+            font-family: monospace;
+            white-space: pre;
+            font-size: 0.9rem;
+            line-height: 1.2;
+            display: inline-block;
+            text-align: left;
+            margin: 0 auto;
+        }
+
+        .testimonial {
+            border-left: 3px solid var(--accent-color);
+            padding-left: 1.5rem;
+            margin: 2rem 0;
+            font-style: italic;
+        }
+
+        .testimonial-author {
+            text-align: right;
+            margin-top: 0.5rem;
+            font-style: normal;
+            font-weight: bold;
+        }
+
+        .cta {
+            text-align: center;
+            margin: 3rem 0;
+        }
+
+        .cta-button {
+            display: inline-block;
+            padding: 1rem 2rem;
+            background-color: var(--accent-color);
+            color: var(--bg-color);
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 1.2rem;
+            border: none;
+        }
+        
+        .nav-links {
+            text-align: center;
+            margin-top: 3rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--light-gray);
+            position: relative;
+        }
+        
+        .nav-links::before,
+        .nav-links::after {
+            content: "·";
+            position: absolute;
+            top: 1rem;
+            font-size: 1.5rem;
+            color: var(--light-gray);
+        }
+        
+        .nav-links::before {
+            left: 30%;
+        }
+        
+        .nav-links::after {
+            right: 30%;
+        }
+
+        .nav-link {
+            color: var(--accent-color);
+            text-decoration: none;
+            font-weight: bold;
+        }
+        
+        .theme-toggle {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            background: none;
+            border: none;
+            font-size: 1.2rem;
+            cursor: pointer;
+            color: var(--accent-color);
+            padding: 0.5rem;
+            border-radius: 50%;
+            width: 2.5rem;
+            height: 2.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+        }
+        
+        @media (min-width: 600px) {
+            .features {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="about-container">
+        <header class="hero">
+            <button id="theme-toggle" class="theme-toggle" aria-label="Toggle dark mode">☀</button>
+            <h1>InkTodos</h1>
+            <p class="tagline">Thoughtfully designed for e-readers, beautifully simple by nature</p>
+            
+            <div class="illustration">
+                <div class="ascii-art">
+   ╭───────────────────╮    ✧
+   │                   │  ✧
+   │  ☐ Read a book    │    ✧
+   │  ☑ Make tea       │  ✧
+   │  ☐ Take notes     │    ✧
+   │  ☐ Rest eyes      │  ✧
+   │                   │
+   ╰───────────────────╯
+                </div>
+            </div>
+        </header>
+        
+        <section class="section">
+            <h2 class="section-title">Why InkTodos?</h2>
+            <p>In a world full of to-do apps with endless features that cause endless stress, InkTodos is a quiet rebellion. It's the digital equivalent of a perfect sheet of paper—simple, patient, and free from distractions. No cloud storage, no notifications competing for your attention.</p>
+            
+            <div class="testimonial">
+                <p>"After years of drowning in productivity apps, InkTodos feels like taking a deep breath. It lives on my Kindle—a device designed for slowness, for thought, for intention—not among the endless distractions of my phone."</p>
+                <p class="testimonial-author">— Emily, Writer & Kindle enthusiast</p>
+            </div>
+            
+            <p>InkTodos turns your e-reader into something special: a quiet space where tasks feel like gentle reminders, not obligations. Your e-ink display uses barely any power, and your attention stays with you, not sold to advertisers.</p>
+        </section>
+        
+        <section class="section">
+            <h2 class="section-title">Crafted for E-ink, Crafted for Quiet</h2>
+            
+            <div class="features">
+                <div class="feature">
+                    <div class="illustration">
+                        <div class="ascii-art">
+  ┌─────────┐
+  │         │
+  │  ·····  │
+  │  ·····  │
+  │  ·····  │
+  │         │
+  └─────────┘
+   SIMPLICITY
+                        </div>
+                    </div>
+                    <h3 class="feature-title">Beautifully Minimal</h3>
+                    <p class="feature-desc">No hidden menus. No complicated categories. Just space and simplicity. A list that breathes.</p>
+                </div>
+                
+                <div class="feature">
+                    <div class="illustration">
+                        <div class="ascii-art">
+  ┌─────────┐
+  │  ☑ ☐ ☐  │
+  │ ╱       │
+  │╱        │
+  │   ✗     │
+  │  WIFI   │
+  └─────────┘
+                        </div>
+                    </div>
+                    <h3 class="feature-title">Gloriously Offline</h3>
+                    <p class="feature-desc">No cloud storage for your tasks. No account to create. No data being collected. Just you and your thoughts, safely on your device.</p>
+                </div>
+                
+                <div class="feature">
+                    <div class="illustration">
+                        <div class="ascii-art">
+  ┌─────────┐
+  │░░░░░░░░░│
+  │░░░░░░░░░│
+  │░░░░░░░░░│
+  │░░░░░░░░░│
+  └─────────┘
+  PERFORMANCE
+                        </div>
+                    </div>
+                    <h3 class="feature-title">E-ink Perfect</h3>
+                    <p class="feature-desc">Kindle-style fonts. Plenty of whitespace. No battery-draining animations. Leave it open all day—your e-reader barely notices it's there.</p>
+                </div>
+                
+                <div class="feature">
+                    <div class="illustration">
+                        <div class="ascii-art">
+    ┌─────┐
+    │  │  │
+    │  │  │
+  ┌─┘  │  └─┐
+  │    │    │
+  │    V    │
+  └─────────┘
+                        </div>
+                    </div>
+                    <h3 class="feature-title">Daily Renewal</h3>
+                    <p class="feature-desc">Tasks don't pile up and cause stress. Each day offers a fresh start—yesterday's incomplete tasks are tucked away, not deleted but separated into their own section.</p>
+                </div>
+            </div>
+        </section>
+        
+        <section class="section">
+            <h2 class="section-title">A Different Philosophy</h2>
+            <p>InkTodos isn't just another productivity app—it's a different way of thinking about tasks. It rests on three simple principles:</p>
+            
+            <div class="illustration">
+                <div class="ascii-art">
+  ┌───────────┐   ┌───────────┐   ┌───────────┐
+  │    ☯      │   │     ⚡     │   │     ✿     │
+  │  BREATH   │───│  SPACE    │───│  RELEASE  │
+  │           │   │           │   │           │
+  └───────────┘   └───────────┘   └───────────┘
+                </div>
+            </div>
+            
+            <p>When your tasks live on your e-reader—away from emails and social media—something magical happens. They take on the calm quality of your books. They feel less like demands and more like gentle reminders.</p>
+            
+            <div class="testimonial">
+                <p>"My phone's todo app felt like another boss in my life. InkTodos on my Kobo feels like a friendly note—it doesn't judge me for yesterday's undone tasks, doesn't demand my attention, and respects the simple joy of paper in a digital world."</p>
+                <p class="testimonial-author">— Marcus, Digital Minimalist</p>
+            </div>
+        </section>
+
+        <div class="cta">
+            <a href="index.html" class="cta-button">Try InkTodos Now</a>
+        </div>
+        
+        <footer class="nav-links">
+            <a href="index.html" class="nav-link">« Back to InkTodos App</a>
+        </footer>
+    </div>
+    
+    <script>
+        // Theme handling for about page
+        document.addEventListener('DOMContentLoaded', function() {
+            const themeToggle = document.getElementById('theme-toggle');
+            
+            // Check if user previously set a theme preference
+            function initTheme() {
+                const savedTheme = localStorage.getItem('theme');
+                
+                if (savedTheme === 'dark') {
+                    document.body.classList.add('dark-mode');
+                    themeToggle.textContent = '☾';
+                } else if (savedTheme === 'light') {
+                    document.body.classList.remove('dark-mode');
+                    themeToggle.textContent = '☀';
+                } else {
+                    // Check system preference
+                    const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+                    
+                    if (prefersDark) {
+                        document.body.classList.add('dark-mode');
+                        themeToggle.textContent = '☾';
+                    }
+                }
+            }
+            
+            // Toggle theme
+            function toggleTheme() {
+                if (document.body.classList.contains('dark-mode')) {
+                    document.body.classList.remove('dark-mode');
+                    localStorage.setItem('theme', 'light');
+                    themeToggle.textContent = '☀';
+                } else {
+                    document.body.classList.add('dark-mode');
+                    localStorage.setItem('theme', 'dark');
+                    themeToggle.textContent = '☾';
+                }
+            }
+            
+            // Add event listener
+            if (themeToggle) {
+                themeToggle.addEventListener('click', toggleTheme);
+            }
+            
+            // Initialize theme
+            initTheme();
+        });
+    </script>
+</body>
+</html>
