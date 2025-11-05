@@ -5,7 +5,6 @@ document.addEventListener('DOMContentLoaded', function() {
     var taskInput = document.getElementById('task-input');
     var taskList = document.getElementById('task-list');
     var storageStatus = document.getElementById('storage-status');
-    var themeToggle = document.getElementById('theme-toggle');
 
     var tasks = [];
     var COLORS = {
@@ -21,61 +20,6 @@ document.addEventListener('DOMContentLoaded', function() {
         } else {
             element.innerText = value;
         }
-    }
-
-    function hasClass(element, className) {
-        if (!element || !className) return false;
-        if (element.classList) {
-            return element.classList.contains(className);
-        }
-        var current = element.className || '';
-        var classes = current.split(/\s+/);
-        for (var i = 0; i < classes.length; i++) {
-            if (classes[i] === className) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    function addClass(element, className) {
-        if (!element || !className) return;
-        if (element.classList) {
-            element.classList.add(className);
-            return;
-        }
-        if (!hasClass(element, className)) {
-            element.className = (element.className ? element.className + ' ' : '') + className;
-        }
-    }
-
-    function removeClass(element, className) {
-        if (!element || !className) return;
-        if (element.classList) {
-            element.classList.remove(className);
-            return;
-        }
-        var classes = (element.className || '').split(/\s+/);
-        var updated = [];
-        for (var i = 0; i < classes.length; i++) {
-            if (classes[i] && classes[i] !== className) {
-                updated.push(classes[i]);
-            }
-        }
-        element.className = updated.join(' ');
-    }
-
-    function toggleClass(element, className) {
-        if (!element || !className) return false;
-        if (element.classList && typeof element.classList.toggle === 'function') {
-            return element.classList.toggle(className);
-        }
-        if (hasClass(element, className)) {
-            removeClass(element, className);
-            return false;
-        }
-        addClass(element, className);
-        return true;
     }
 
     function attachEvent(element, eventName, handler) {
@@ -216,25 +160,6 @@ document.addEventListener('DOMContentLoaded', function() {
         setText(dateDisplay, formatted);
     }
 
-    function updateProgressBar() {
-        var progressBar = document.getElementById('progress-bar');
-        if (!progressBar) return;
-
-        if (!tasks || tasks.length === 0) {
-            progressBar.style.width = '0%';
-            return;
-        }
-
-        var completedTasks = 0;
-        for (var i = 0; i < tasks.length; i++) {
-            if (tasks[i] && tasks[i].completed) {
-                completedTasks += 1;
-            }
-        }
-        var percentage = Math.round((completedTasks / tasks.length) * 100);
-        progressBar.style.width = percentage + '%';
-    }
-
     function updateClearButtonVisibility() {
         var clearPendingBtn = document.getElementById('clear-pending-btn');
         if (!clearPendingBtn) return;
@@ -251,7 +176,6 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function renderTasks() {
-        updateProgressBar();
         updateClearButtonVisibility();
 
         if (!taskList) return;
@@ -570,34 +494,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 setText(storageStatus, '✓ 已同步');
                 storageStatus.style.color = COLORS.success;
             }
-        });
-    }
-
-    // Theme preference uses localStorage, but errors are ignored if unavailable.
-    try {
-        if (localStorage.getItem('theme') === 'dark') {
-            addClass(document.body, 'dark-mode');
-            if (themeToggle) {
-                setText(themeToggle, '☾');
-            }
-        }
-    } catch (storageError) {
-        console.warn('localStorage not available for theme preference.');
-    }
-
-    if (themeToggle) {
-        attachEvent(themeToggle, 'click', function(evt) {
-            if (evt && evt.preventDefault) {
-                evt.preventDefault();
-            }
-            var isDarkMode = toggleClass(document.body, 'dark-mode');
-            setText(themeToggle, isDarkMode ? '☾' : '☀');
-            try {
-                localStorage.setItem('theme', isDarkMode ? 'dark' : 'light');
-            } catch (storageWriteError) {
-                // Ignore write issues.
-            }
-            return false;
         });
     }
 
