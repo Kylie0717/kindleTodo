@@ -12,7 +12,6 @@ document.addEventListener('DOMContentLoaded', function() {
     let tasks = [];
 
     // Use localStorage for theme preference only, as it's non-critical
-    // and works on most browsers.
     try {
         if (localStorage.getItem('theme') === 'dark') {
             document.body.classList.add('dark-mode');
@@ -44,58 +43,66 @@ document.addEventListener('DOMContentLoaded', function() {
             month: 'long', 
             day: 'numeric' 
         };
-        dateDisplay.textContent = now.toLocaleDateString(undefined, options);
+        dateDisplay.textContent = now.toLocaleDateString('zh-CN', options);
     }
 
-    // --- Server Communication ---
+    // --- Server Communication (Using .then() for Kindle compatibility) ---
 
     // Load tasks from the server
-    async function loadTasksFromServer() {
+    function loadTasksFromServer() {
         storageStatus.textContent = '同步中...';
         storageStatus.style.color = 'var(--text-color)';
-        try {
-            const response = await fetch('/api/tasks');
-            if (!response.ok) {
-                throw new Error(`Server responded with status: ${response.status}`);
-            }
-            tasks = await response.json();
-            storageStatus.textContent = '✓ 已同步';
-            storageStatus.style.color = 'var(--completed-color)';
-            renderTasks();
-        } catch (error) {
-            console.error('Error loading tasks:', error);
-            storageStatus.textContent = '⚠ 同步失败';
-            storageStatus.style.color = 'black';
-        }
+        
+        fetch('/api/tasks')
+            .then(function(response) {
+                if (!response.ok) {
+                    throw new Error('Server responded with status: ' + response.status);
+                }
+                return response.json();
+            })
+            .then(function(data) {
+                tasks = data;
+                storageStatus.textContent = '✓ 已同步';
+                storageStatus.style.color = 'var(--completed-color)';
+                renderTasks();
+            })
+            .catch(function(error) {
+                console.error('Error loading tasks:', error);
+                storageStatus.textContent = '⚠ 同步失败';
+                storageStatus.style.color = 'black';
+            });
     }
     
     // Save tasks to the server
-    async function saveTasksToServer() {
+    function saveTasksToServer() {
         storageStatus.textContent = '保存中...';
-        try {
-            const response = await fetch('/api/tasks', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(tasks)
-            });
+        
+        fetch('/api/tasks', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(tasks)
+        })
+        .then(function(response) {
             if (!response.ok) {
-                throw new Error(`Server responded with status: ${response.status}`);
+                throw new Error('Server responded with status: ' + response.status);
             }
-            await response.json(); // Wait for the server to confirm
+            return response.json();
+        })
+        .then(function() {
             storageStatus.textContent = '✓ 已同步';
             storageStatus.style.color = 'var(--completed-color)';
-        } catch (error) {
+        })
+        .catch(function(error) {
             console.error('Error saving tasks:', error);
             storageStatus.textContent = '⚠ 同步失败';
             storageStatus.style.color = 'black';
-        }
+        });
     }
     
     // --- UI and Task Logic ---
 
-    // Update progress bar
     function updateProgressBar() {
         const progressBar = document.getElementById('progress-bar');
         if (!progressBar) return;
@@ -105,13 +112,11 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
         
-        const completedTasks = tasks.filter(task => task.completed).length;
+        const completedTasks = tasks.filter(function(task) { return task.completed; }).length;
         const percentage = Math.round((completedTasks / tasks.length) * 100);
-        
         progressBar.style.width = percentage + '%';
     }
     
-    // Render the task list from the in-memory `tasks` array
     function renderTasks() {
         updateProgressBar();
         updateClearButtonVisibility();
@@ -138,18 +143,18 @@ document.addEventListener('DOMContentLoaded', function() {
             const checkbox = document.createElement('input');
             checkbox.type = 'checkbox';
             checkbox.checked = task.completed;
-            checkbox.addEventListener('change', () => toggleTaskStatus(index));
+            checkbox.addEventListener('change', function() { toggleTaskStatus(index); });
             
             const taskText = document.createElement('span');
             taskText.className = 'task-text';
             taskText.textContent = task.text;
-            taskText.addEventListener('click', () => toggleTaskStatus(index));
+            taskText.addEventListener('click', function() { toggleTaskStatus(index); });
             
             const deleteBtn = document.createElement('button');
             deleteBtn.className = 'delete-btn';
             deleteBtn.textContent = '×';
             deleteBtn.setAttribute('aria-label', 'Delete task');
-            deleteBtn.addEventListener('click', () => deleteTask(index));
+            deleteBtn.addEventListener('click', function() { deleteTask(index); });
             
             taskItem.appendChild(checkbox);
             taskItem.appendChild(taskText);
@@ -159,7 +164,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
-    // Add a new task
     function addTask(text) {
         if (!text.trim()) return;
         
@@ -173,14 +177,12 @@ document.addEventListener('DOMContentLoaded', function() {
         saveTasksToServer();
     }
     
-    // Delete a task
     function deleteTask(index) {
         tasks.splice(index, 1);
         renderTasks();
         saveTasksToServer();
     }
     
-    // Simple confetti animation
     function showConfetti(x, y) {
         const confettiContainer = document.createElement('div');
         confettiContainer.className = 'confetti-container';
@@ -205,22 +207,21 @@ document.addEventListener('DOMContentLoaded', function() {
             particle.style.top = (Math.random() * 20 - 10) + 'px';
             const angle = Math.random() * Math.PI * 2;
             const distance = Math.random() * 40 + 10;
-            particle.style.transform = `translate(${Math.cos(angle) * distance}px, ${Math.sin(angle) * distance}px)`;
+            particle.style.transform = 'translate(' + (Math.cos(angle) * distance) + 'px, ' + (Math.sin(angle) * distance) + 'px)';
             confettiContainer.appendChild(particle);
         }
         
-        setTimeout(() => {
+        setTimeout(function() {
             document.body.removeChild(confettiContainer);
         }, 800);
     }
 
-    // Toggle task completed status
     function toggleTaskStatus(index) {
         const wasCompleted = tasks[index].completed;
         tasks[index].completed = !wasCompleted;
         
         if (!wasCompleted) {
-            const taskElement = document.querySelector(`#task-list li[data-index="${index}"]`);
+            const taskElement = document.querySelector('#task-list li[data-index="' + index + '"]');
             if (taskElement) {
                 const rect = taskElement.getBoundingClientRect();
                 showConfetti(rect.left + rect.width / 2, rect.top + rect.height / 2);
@@ -231,78 +232,75 @@ document.addEventListener('DOMContentLoaded', function() {
         saveTasksToServer();
     }
     
-    // Clear all rolled over tasks
     function clearPendingTasks() {
-        tasks = tasks.filter(task => task.completed || !task.rolledOver);
+        tasks = tasks.filter(function(task) { return task.completed || !task.rolledOver; });
         renderTasks();
         saveTasksToServer();
     }
     
-    // Show or hide clear button
     function updateClearButtonVisibility() {
         const clearPendingBtn = document.getElementById('clear-pending-btn');
         if (!clearPendingBtn) return;
         
-        const hasRolledOverTasks = tasks.some(task => task.rolledOver && !task.completed);
+        const hasRolledOverTasks = tasks.some(function(task) { return task.rolledOver && !task.completed; });
         clearPendingBtn.style.display = hasRolledOverTasks ? 'block' : 'none';
     }
     
-    // Export tasks to TXT file - uses the existing server-side function
-        function exportTasksToTxt(e) {
-            if (e) e.preventDefault();
-            
-            if (tasks.length === 0) {
-                alert('沒有可導出的任務。');
-                return;
-            }
-            
-            const now = new Date();
-            const dateString = now.toLocaleDateString(undefined, { 
-                weekday: 'long', 
-                year: 'numeric', 
-                month: 'long', 
-                day: 'numeric' 
-            });
-            
-            const payload = {
-                tasks: tasks,
-                date: dateString
-            };
-            
-            fetch('/api/export', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
-            })
-            .then(response => {
-                if (!response.ok) throw new Error('Server returned error');
-                return response.blob();
-            })
-            .then(blob => {
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                const date_for_filename = new Date().toISOString().split('T')[0];
-                
-                a.href = url;
-                a.download = 'InkTodos-' + date_for_filename + '.txt';
-                a.style.display = 'none';
-                
-                document.body.appendChild(a);
-                a.click();
-                
-                setTimeout(() => {
-                    document.body.removeChild(a);
-                    URL.revokeObjectURL(url);
-                }, 100);
-            })
-            .catch(error => {
-                console.error('Export error:', error);
-                alert('無法導出任務，請檢查控制台錯誤。');
-            });
+    function exportTasksToTxt(e) {
+        if (e) e.preventDefault();
+        
+        if (tasks.length === 0) {
+            alert('没有可导出的任务。');
+            return;
         }
+        
+        const now = new Date();
+        const dateString = now.toLocaleDateString('zh-CN', { 
+            weekday: 'long', 
+            year: 'numeric', 
+            month: 'long', 
+            day: 'numeric' 
+        });
+        
+        const payload = {
+            tasks: tasks,
+            date: dateString
+        };
+        
+        fetch('/api/export', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        })
+        .then(function(response) {
+            if (!response.ok) throw new Error('Server returned error');
+            return response.blob();
+        })
+        .then(function(blob) {
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            const date_for_filename = new Date().toISOString().split('T')[0];
+            
+            a.href = url;
+            a.download = 'KindleTodo-' + date_for_filename + '.txt';
+            a.style.display = 'none';
+            
+            document.body.appendChild(a);
+            a.click();
+            
+            setTimeout(function() {
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            }, 100);
+        })
+        .catch(function(error) {
+            console.error('Export error:', error);
+            alert('无法导出任务，请检查控制台错误。');
+        });
+    }
+
     // --- Initialization ---
 
-    // Event Listeners
     taskForm.addEventListener('submit', function(e) {
         e.preventDefault();
         addTask(taskInput.value);
@@ -319,7 +317,6 @@ document.addEventListener('DOMContentLoaded', function() {
         exportBtn.addEventListener('click', exportTasksToTxt);
     }
     
-    // Initial load
     updateDateDisplay();
     loadTasksFromServer();
 });
