@@ -9,8 +9,22 @@
 <body>
     <div class="container">
         <header>
-            <h1>Kindle Todo</h1>
-            <p class="date-display" id="current-date"></p>
+            <div class="widget-top">
+                <div class="clock-section">
+                    <div id="clock-time"></div>
+                    <p class="date-display" id="current-date"></p>
+                </div>
+                <div class="weather-section" id="weather-display">
+                    <span id="weather-icon"></span>
+                    <span id="weather-temp"></span>
+                    <div id="weather-desc"></div>
+                    <div id="weather-city"></div>
+                </div>
+            </div>
+            <div class="progress-bar-wrap">
+                <div class="progress-bar-bg"><div id="progress-bar"></div></div>
+                <span id="progress-text"></span>
+            </div>
         </header>
         
         <main>

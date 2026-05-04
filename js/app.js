@@ -143,6 +143,46 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
+    function updateClock() {
+        var clockEl = document.getElementById('clock-time');
+        if (!clockEl) return;
+        var now = new Date();
+        var h = now.getHours();
+        var m = now.getMinutes();
+        setText(clockEl, (h < 10 ? '0' + h : String(h)) + ':' + (m < 10 ? '0' + m : String(m)));
+    }
+
+    function loadWeather() {
+        var iconEl = document.getElementById('weather-icon');
+        var tempEl = document.getElementById('weather-temp');
+        var descEl = document.getElementById('weather-desc');
+        var cityEl = document.getElementById('weather-city');
+        if (!iconEl) return;
+        sendRequest('GET', '/api/weather', null, function(err, xhr) {
+            if (err) return;
+            var data = safeParseJson(xhr.responseText);
+            if (!data || data.error) return;
+            setText(iconEl, data.icon || '');
+            setText(tempEl, data.temp + '°C');
+            setText(descEl, data.desc || '');
+            setText(cityEl, data.city || '');
+        });
+    }
+
+    function updateProgress() {
+        var bar = document.getElementById('progress-bar');
+        var textEl = document.getElementById('progress-text');
+        if (!bar || !textEl) return;
+        var total = tasks.length;
+        var done = 0;
+        for (var i = 0; i < tasks.length; i++) {
+            if (tasks[i] && tasks[i].completed) done++;
+        }
+        var pct = total > 0 ? Math.round(done / total * 100) : 0;
+        bar.style.width = pct + '%';
+        setText(textEl, done + '/' + total + ' 已完成');
+    }
+
     function updateDateDisplay() {
         if (!dateDisplay) return;
         var now = new Date();
@@ -177,6 +217,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function renderTasks() {
         updateClearButtonVisibility();
+        updateProgress();
 
         if (!taskList) return;
         taskList.innerHTML = '';
@@ -526,6 +567,10 @@ document.addEventListener('DOMContentLoaded', function() {
         attachEvent(exportBtn, 'click', exportTasksToTxt);
     }
 
+    updateClock();
+    setInterval(updateClock, 60000);
     updateDateDisplay();
+    loadWeather();
+    setInterval(loadWeather, 1800000);
     loadTasksFromServer();
 });
