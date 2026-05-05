@@ -1,7 +1,14 @@
 export async function onRequestGet({ request }) {
   try {
+    const url = new URL(request.url);
+    const customCity = url.searchParams.get('city') || '';
     const clientIp = request.headers.get('CF-Connecting-IP') || '';
-    const res = await fetch('https://wttr.in/?format=j1', {
+
+    const wttrUrl = customCity
+      ? `https://wttr.in/${encodeURIComponent(customCity)}?format=j1`
+      : 'https://wttr.in/?format=j1';
+
+    const res = await fetch(wttrUrl, {
       headers: { 'X-Forwarded-For': clientIp, 'User-Agent': 'curl/7.68.0' }
     });
     const data = await res.json();
@@ -18,7 +25,7 @@ export async function onRequestGet({ request }) {
     else if (descRaw.includes('overcast')) icon = '☁';
 
     const nearest = data.nearest_area && data.nearest_area[0];
-    const city = nearest ? (nearest.areaName[0].value || '') : '';
+    const city = customCity || (nearest ? (nearest.areaName[0].value || '') : '');
 
     return new Response(JSON.stringify({
       temp: c.temp_C,

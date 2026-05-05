@@ -158,7 +158,15 @@ document.addEventListener('DOMContentLoaded', function() {
         var descEl = document.getElementById('weather-desc');
         var cityEl = document.getElementById('weather-city');
         if (!iconEl) return;
-        sendRequest('GET', '/api/weather', null, function(err, xhr) {
+
+        var customCity = '';
+        try {
+            customCity = localStorage.getItem('weather-city') || '';
+        } catch (e) {}
+
+        var url = '/api/weather' + (customCity ? '?city=' + encodeURIComponent(customCity) : '');
+
+        sendRequest('GET', url, null, function(err, xhr) {
             if (err) return;
             var data = safeParseJson(xhr.responseText);
             if (!data || data.error) return;
@@ -167,6 +175,26 @@ document.addEventListener('DOMContentLoaded', function() {
             setText(descEl, data.desc || '');
             setText(cityEl, data.city || '');
         });
+    }
+
+    function changeCityPrompt() {
+        var currentCity = '';
+        try {
+            currentCity = localStorage.getItem('weather-city') || '';
+        } catch (e) {}
+
+        var newCity = prompt('输入城市名称（留空则自动定位）：', currentCity);
+        if (newCity === null) return;
+
+        try {
+            if (newCity === '') {
+                localStorage.removeItem('weather-city');
+            } else {
+                localStorage.setItem('weather-city', newCity);
+            }
+        } catch (e) {}
+
+        loadWeather();
     }
 
     function updateProgress() {
@@ -565,6 +593,11 @@ document.addEventListener('DOMContentLoaded', function() {
     var exportBtn = document.getElementById('export-btn');
     if (exportBtn) {
         attachEvent(exportBtn, 'click', exportTasksToTxt);
+    }
+
+    var weatherCity = document.getElementById('weather-city');
+    if (weatherCity) {
+        attachEvent(weatherCity, 'click', changeCityPrompt);
     }
 
     updateClock();
