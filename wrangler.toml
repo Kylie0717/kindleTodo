@@ -1,5 +1,6 @@
 name = "kindletodo"
 compatibility_date = "2026-09-07"
+main = "_worker.js"
 
 [assets]
 directory = "."
